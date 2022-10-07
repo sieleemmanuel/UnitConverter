@@ -1,5 +1,6 @@
 package com.siele.unitconverter.ui
 
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -8,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.siele.unitconverter.util.Screen
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
@@ -26,7 +28,7 @@ fun Navigation() {
         ){entry->
             ConvertScreen(
                 navController = navController,
-                unitMeasure = entry.arguments?.getString("unit_measure")!!
+                unitMeasure = entry.arguments?.getString("unit_measure")!!,
             )
         }
 

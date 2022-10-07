@@ -2,7 +2,8 @@ package com.siele.unitconverter.util
 import com.siele.unitconverter.R
 import com.siele.unitconverter.data.model.UnitOfMeasure
 object Constants {
-        var unitsOfMeasure = listOf(
+    const val BASE_URL: String = "https://neutrinoapi.net/"
+    var unitsOfMeasure = listOf(
             UnitOfMeasure(R.drawable.length,"Length"),
             UnitOfMeasure(R.drawable.volume,"Volume"),
             UnitOfMeasure(R.drawable.weight,"Weight"),
@@ -17,29 +18,31 @@ object Constants {
             UnitOfMeasure(R.drawable.crypto,"Crypto"),
         )
 
-    val lengthUnits = listOf("Kilometers", "Meters", "Centimeters","Millimeters", "Micrometers",
-        "Nanometers", "Mile", "Yard", "Feet", "Inches")
+    val lengthUnits = listOf("Kilometer", "Meter", "Centimeter","Millimeter", "Micron",
+        "Nanometers", "Mile", "Yard", "Feet", "Inch")
     val volumeUnits = listOf("Liter", "Milliliter", "Gallon", "Tablespoon","Teaspoon", "Cup", "Pint",
         "Cubic-centimeter", "Cubic-meter", "Cubic-inch", "Cubic-yard")
-    val weightUnits = listOf("Kilogram", "Tonne","Gram", "Milligram", "Pound", "Ounce", "Calorie",
-        "Carat")
+    val weightUnits = listOf("Kilogram", "Tonne","Gram", "Milligram", "Stone", "Pound", "Ounce",
+    )
     val timeUnits = listOf("Year", "Month", "Week", "Day", "Hour", "Minute", "Second", "Millisecond",
     "Microsecond", "Nanosecond")
     val angleUnits = listOf("Degree", "Radian", "Milliradian", "Gradian", "Revolution", "Circle" )
     val temperatureUnits = listOf("Celsius", "Fahrenheit", "Kelvin")
-    val electricUnits = listOf("Volt", "Amp", "Ohm", "Megohm", "Microhm")
+    val electricUnits = listOf("Amp", "Centiampere", "Gigampere", "Kiloampere", "Microampere",
+        "Milliamp", "Megaampere", "Nanoampere")
     val energyUnits = listOf("Joule", "Kilojoule","Megajoule","Gigajoule","Calorie", "Kilocalorie",
-        "Megacalorie", "Therms", "Quads", "Electronvolts", "Kilolectronvolts","Megaelectronvolts")
+        "Megacalorie", "Therm", "Quad", "Electronvolt", "Kilolectronvolt","Megaelectronvolt")
     val forceUnits = listOf("Newton", "Kilonewton", "Meganewton","Nanonewton", "Micronewton",
-        "Millinetwon", "Dyne", "Poundal", "Kilogram-force", "Gram-force", "Pound-force", "Ounce-force")
-    val storageUnits  = listOf("Bit", "Bytes", "Kilobytes", "Megabyte", "Gigabyte", "Terabyte",
+        "Millinetwon", "Dyne", "Poundal")
+    val storageUnits  = listOf("Bit", "Kilobit","Megabit","Gigabit", "Terabit","Petabit",
+        "Byte", "Kilobyte", "Megabyte", "Gigabyte", "Terabyte",
         "Petabyte")
-    val currencyUnits= listOf("USD", "EUR", "INR", "AED", "AFN", "ALL", "ARS", "AUD",
+    val currencyUnits= listOf("USD", "EUR", "EGP", "INR", "AED", "AFN", "ALL", "ARS", "AUD",
         "BDT","BGN", "BOB", "BRL", "CAD", "CHF", "CLP", "CNY", "COP", "CRC", "CZK", "DKK",
-        "DZD", "EGP", "FJD",  "GEL", "GHS", "HKD", "HUF", "IDR", "ILS", "IQD", "ISK","JOD", "JPY",
-        "KRW", "KWD", "KZI", "LBP", "LKR", "MAD","MDL", "MMK", "MNT", "MOP", "MXN", "MYR", "NGN",
+        "DZD",  "FJD",  "GEL", "GHS", "HKD", "HUF", "IDR", "ILS", "IQD", "ISK","JOD", "JPY",
+        "KES", "KRW", "KWD", "KZI", "LBP", "LKR", "MAD","MDL", "MMK", "MNT", "MOP", "MXN", "MYR", "NGN",
         "NOK", "NZD", "PEN", "PHP", "PKR", "PLN", "PYG", "QAR", "RON", "RSD", "RUB","SAR", "SEK",
         "SGD", "THB", "TRY","TWD", "TZS", "UAH", "VEF", "VND", "ZAR")
-    val cryptoUnits = listOf("BTC", "ETC", "LTC", "XMR", "XRP")
+    val cryptoUnits = listOf("BTC", "ETH", "LTC", "XMR", "XRP")
 
     }

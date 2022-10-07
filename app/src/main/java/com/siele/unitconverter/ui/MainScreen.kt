@@ -1,15 +1,14 @@
 package com.siele.unitconverter.ui
 
-import android.content.res.Configuration
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.GridCells
-import androidx.compose.foundation.lazy.LazyVerticalGrid
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -21,13 +20,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.siele.unitconverter.data.model.UnitOfMeasure
-import com.siele.unitconverter.ui.theme.ComposerTheme
 import com.siele.unitconverter.util.Constants
 import com.siele.unitconverter.util.Screen
 
@@ -38,6 +34,7 @@ fun MainScreen(navController: NavController) {
     }
 }
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun ScafoldCompose(navController: NavController) {
     Scaffold(
@@ -65,19 +62,6 @@ fun TopBarCompose() {
                 Icon(Icons.Default.Home, "Menu")
             }
         },
-        /*actions = {
-            IconButton(onClick = {
-                Toast.makeText(context, "Search clicked", Toast.LENGTH_SHORT).show()
-            }) {
-                Icon(Icons.Default.Search, "Search")
-            }
-
-            IconButton(onClick = {
-                Toast.makeText(context, "Notify clicked", Toast.LENGTH_SHORT).show()
-            }) {
-                Icon(Icons.Default.Notifications, "Notification")
-            }
-        },*/
         backgroundColor = MaterialTheme.colors.primaryVariant,
         contentColor = MaterialTheme.colors.onPrimary
     )
@@ -86,7 +70,7 @@ fun TopBarCompose() {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ContentCompose(navController: NavController) {
-    val  listState = rememberLazyListState()
+    val  listState = rememberLazyGridState()
     Column(
         modifier = Modifier
             .padding(start = 10.dp)
@@ -94,11 +78,11 @@ fun ContentCompose(navController: NavController) {
     ) {
         Spacer(modifier = Modifier.height(10.dp))
         LazyVerticalGrid(
-            cells = GridCells.Adaptive(120.dp),
+            columns = GridCells.Adaptive(120.dp),
             state = listState,
             content = {
-                items(Constants.unitsOfMeasure) { unit ->
-                    UnitItem(unit) { selectedUnit ->
+                items(Constants.unitsOfMeasure.size) { position ->
+                    UnitItem(Constants.unitsOfMeasure[position]) { selectedUnit ->
                         navController.navigate(Screen.ConvertScreen.route + "/${selectedUnit.unit}")
                     }
                 }
@@ -109,7 +93,7 @@ fun ContentCompose(navController: NavController) {
 }
 
 @Composable
-fun UnitItem(unitMeasure: UnitOfMeasure, selectedMeasure:(UnitOfMeasure)->kotlin.Unit) {
+fun UnitItem(unitMeasure: UnitOfMeasure, selectedMeasure:(UnitOfMeasure)->Unit) {
     Surface(
         shape = MaterialTheme.shapes.medium,
         elevation = 10.dp,
@@ -146,7 +130,7 @@ fun UnitItem(unitMeasure: UnitOfMeasure, selectedMeasure:(UnitOfMeasure)->kotlin
 
 }
 
-@Preview(
+/*@Preview(
     uiMode = Configuration.UI_MODE_NIGHT_NO,
     showBackground = true,
     showSystemUi = true,
@@ -159,4 +143,4 @@ fun PrewiewHere() {
         }
     }
 
-}
+}*/
