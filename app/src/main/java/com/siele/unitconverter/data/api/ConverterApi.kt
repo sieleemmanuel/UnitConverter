@@ -12,7 +12,7 @@ interface ConverterApi {
         @Query("user-id")
         userId:String = BuildConfig.USER_ID,
         @Query("api-key")
-        apiKey:String = BuildConfig.NEUTRINO_API_TEST ,
+        apiKey:String = BuildConfig.NEUTRINO_API_PROD ,
         @Query("from-value")
         fromValue:String ="",
         @Query("from-type")

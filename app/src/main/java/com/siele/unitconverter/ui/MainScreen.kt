@@ -45,7 +45,6 @@ fun ScafoldCompose(navController: NavController) {
 
 @Composable
 fun TopBarCompose() {
-    val context = LocalContext.current
     TopAppBar(
         title = {
             Text(
@@ -56,9 +55,7 @@ fun TopBarCompose() {
             )
         },
         navigationIcon = {
-            IconButton(onClick = {
-                Toast.makeText(context, "Menu clicked", Toast.LENGTH_SHORT).show()
-            }) {
+            IconButton(onClick = {}) {
                 Icon(Icons.Default.Home, "Menu")
             }
         },
@@ -67,7 +64,6 @@ fun TopBarCompose() {
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ContentCompose(navController: NavController) {
     val  listState = rememberLazyGridState()
@@ -122,7 +118,7 @@ fun UnitItem(unitMeasure: UnitOfMeasure, selectedMeasure:(UnitOfMeasure)->Unit) 
                     .padding(vertical = 10.dp),
                 fontWeight = FontWeight.Bold,
                 text = unitMeasure.unit,
-                color = MaterialTheme.colors.secondaryVariant,
+                color = MaterialTheme.colors.primary,
                 style = MaterialTheme.typography.body2,
             )
         }
@@ -130,17 +126,3 @@ fun UnitItem(unitMeasure: UnitOfMeasure, selectedMeasure:(UnitOfMeasure)->Unit) 
 
 }
 
-/*@Preview(
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-    showBackground = true,
-    showSystemUi = true,
-)
-@Composable
-fun PrewiewHere() {
-    ComposerTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            ScafoldCompose(navController = rememberNavController())
-        }
-    }
-
-}*/

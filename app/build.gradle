@@ -24,7 +24,7 @@ android {
         Properties properties = new Properties()
         properties.load(new FileInputStream(propertiesFile))
 
-        buildConfigField('String', 'NEUTRINO_API_TEST', properties['NEUTRINO_API_TEST'])
+        //buildConfigField('String', 'NEUTRINO_API_TEST', properties['NEUTRINO_API_TEST'])
         buildConfigField('String', 'NEUTRINO_API_PROD', properties['NEUTRINO_API_PROD'])
         buildConfigField('String', 'USER_ID', properties['USER_ID'])
 
@@ -32,7 +32,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
