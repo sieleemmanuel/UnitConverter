@@ -1,4 +1,4 @@
-package com.siele.unitconverter.ui
+package com.siele.unitconverter.ui.navigation
 
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
@@ -7,6 +7,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.siele.unitconverter.ui.screens.convert.ConvertScreen
+import com.siele.unitconverter.ui.screens.main.MainScreen
 import com.siele.unitconverter.util.Screen
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -18,6 +20,7 @@ fun Navigation() {
         composable(route = Screen.MainScreen.route){
             MainScreen(navController)
         }
+
         composable(
             route = Screen.ConvertScreen.route + "/{unit_measure}",
             arguments = listOf(

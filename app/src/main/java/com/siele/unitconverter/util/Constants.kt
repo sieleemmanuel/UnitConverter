@@ -28,7 +28,7 @@ object Constants {
     "Microsecond", "Nanosecond")
     val angleUnits = listOf("Degree", "Radian", "Milliradian", "Gradian", "Revolution", "Circle" )
     val temperatureUnits = listOf("Celsius", "Fahrenheit", "Kelvin")
-    val electricUnits = listOf("Amp", "Centiampere", "Gigampere", "Kiloampere", "Microampere",
+    val electricCurrentUnits = listOf("Ampere", "Centiampere", "Gigampere", "Kiloampere", "Microampere",
         "Milliamp", "Megaampere", "Nanoampere")
     val energyUnits = listOf("Joule", "Kilojoule","Megajoule","Gigajoule","Calorie", "Kilocalorie",
         "Megacalorie", "Therm", "Quad", "Electronvolt", "Kilolectronvolt","Megaelectronvolt")

@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">Unit Converter</string>
+    <string name="temperature_label">Temperature</string>
+    <string name="length_label">Length</string>
+    <string name="electricity_label">Electricity</string>
+    <string name="volume_label">Volume</string>
+    <string name="weight_label">Weight</string>
+    <string name="angle_label">Angle</string>
+    <string name="time_label">Time</string>
+    <string name="energy_label">Energy</string>
+    <string name="force_label">Force</string>
+    <string name="storage_label">Storage</string>
+    <string name="currency_label">Currency</string>
+    <string name="enter_value_label">Enter amount or value</string>
+    <string name="empty_value_label">Value is empty!</string>
+    <string name="converted_to_label">Converted to</string>
+    <string name="converted_value_label">Converted value</string>
+    <string name="network_error_message">No internet connection, check and try again</string>
+    <string name="convert_label">Convert</string>
 </resources>

@@ -2,7 +2,8 @@ package com.siele.unitconverter.di
 
 import com.siele.unitconverter.data.api.ConverterApi
 import com.siele.unitconverter.data.api.RetrofitInstance
-import com.siele.unitconverter.data.repository.ConverterRepo
+import com.siele.unitconverter.data.repository.ConverterRepository
+import com.siele.unitconverter.data.repository.DefaultConverterRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,6 +20,6 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRepository(api:ConverterApi):ConverterRepo = ConverterRepo(api)
+    fun provideRepository(api:ConverterApi) = DefaultConverterRepository(api) as ConverterRepository
 
 }

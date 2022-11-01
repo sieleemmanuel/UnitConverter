@@ -2,6 +2,7 @@ package com.siele.unitconverter.util
 
 import android.content.Context
 import android.net.ConnectivityManager
+import android.net.Network
 import android.net.NetworkCapabilities
 import android.os.Build
 
@@ -11,7 +12,7 @@ object NetworkMonitor {
         val activeNetwork = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             connectivityManager.activeNetwork
         } else {
-           TODO()
+           connectivityManager.activeNetworkInfo as Network
         }
         val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork)
         return networkCapabilities !=null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)    }

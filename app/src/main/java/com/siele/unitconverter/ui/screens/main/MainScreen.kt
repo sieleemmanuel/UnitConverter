@@ -1,8 +1,6 @@
-package com.siele.unitconverter.ui
+package com.siele.unitconverter.ui.screens.main
 
 import android.annotation.SuppressLint
-import android.widget.Toast
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,14 +14,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.siele.unitconverter.data.model.UnitOfMeasure
+import com.siele.unitconverter.ui.theme.ComposerTheme
 import com.siele.unitconverter.util.Constants
 import com.siele.unitconverter.util.Screen
 
@@ -35,6 +35,7 @@ fun MainScreen(navController: NavController) {
 }
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+
 @Composable
 fun ScafoldCompose(navController: NavController) {
     Scaffold(
@@ -123,6 +124,14 @@ fun UnitItem(unitMeasure: UnitOfMeasure, selectedMeasure:(UnitOfMeasure)->Unit) 
             )
         }
     }
-
 }
+
+@Preview(showSystemUi = true)
+@Composable
+fun MainScreenPreview() {
+    ComposerTheme {
+        MainScreen(navController = rememberNavController())
+    }
+}
+
 
