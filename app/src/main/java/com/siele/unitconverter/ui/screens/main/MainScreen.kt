@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -40,8 +41,9 @@ fun MainScreen(navController: NavController) {
 fun ScafoldCompose(navController: NavController) {
     Scaffold(
         topBar = { TopBarCompose() },
-        content = { ContentCompose(navController) },
-    )
+    ){ paddingValues ->
+        ContentCompose(navController, paddingValues)
+    }
 }
 
 @Composable
@@ -66,37 +68,42 @@ fun TopBarCompose() {
 }
 
 @Composable
-fun ContentCompose(navController: NavController) {
+fun ContentCompose(navController: NavController,
+                   paddingValues: PaddingValues,
+                   modifier: Modifier = Modifier) {
     val  listState = rememberLazyGridState()
-    Column(
-        modifier = Modifier
-            .padding(start = 10.dp)
-            .fillMaxWidth()
-    ) {
-        Spacer(modifier = Modifier.height(10.dp))
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(120.dp),
-            state = listState,
-            content = {
+    Box(modifier = modifier
+        .padding(paddingValues)
+        .fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Spacer(modifier = modifier.heightIn(10.dp))
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(120.dp),
+                state = listState,
+                contentPadding = PaddingValues( 10.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ){
                 items(Constants.unitsOfMeasure.size) { position ->
-                    UnitItem(Constants.unitsOfMeasure[position]) { selectedUnit ->
+                    UnitItem(unitMeasure = Constants.unitsOfMeasure[position]) { selectedUnit ->
                         navController.navigate(Screen.ConvertScreen.route + "/${selectedUnit.unit}")
                     }
                 }
             }
-        )
+        }
     }
-
 }
 
 @Composable
-fun UnitItem(unitMeasure: UnitOfMeasure, selectedMeasure:(UnitOfMeasure)->Unit) {
-    Surface(
-        shape = MaterialTheme.shapes.medium,
+fun UnitItem(unitMeasure: UnitOfMeasure, modifier: Modifier = Modifier, selectedMeasure:(UnitOfMeasure)->Unit) {
+    Card(
+        shape = RoundedCornerShape(5.dp),
         elevation = 10.dp,
-        modifier = Modifier
+        modifier = modifier
             .wrapContentHeight()
-            .padding(end = 10.dp, bottom = 10.dp, top = 5.dp)
             .fillMaxSize()
             .clickable { selectedMeasure(unitMeasure) },
     ) {

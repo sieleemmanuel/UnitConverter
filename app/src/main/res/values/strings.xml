@@ -12,7 +12,7 @@
     <string name="storage_label">Storage</string>
     <string name="currency_label">Currency</string>
     <string name="enter_value_label">Enter amount or value</string>
-    <string name="empty_value_label">Value is empty!</string>
+    <string name="empty_value_label">Value or amount cannot be empty!</string>
     <string name="converted_to_label">Converted to</string>
     <string name="converted_value_label">Converted value</string>
     <string name="network_error_message">No internet connection, check and try again</string>

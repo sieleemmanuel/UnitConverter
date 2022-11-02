@@ -5,6 +5,6 @@ import com.siele.unitconverter.util.Resource
 
 interface ConverterRepository {
     suspend fun getConvertedValue(
-        fromValue: String, fromType: String, toType: String
+        fromValue: String, fromType: String, toType: String, isConnected:Boolean
     ): Resource<ConversionResponse>
 }

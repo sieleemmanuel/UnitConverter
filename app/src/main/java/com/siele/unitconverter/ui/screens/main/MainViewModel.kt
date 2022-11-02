@@ -1,6 +1,5 @@
 package com.siele.unitconverter.ui.screens.main
 
-import android.annotation.SuppressLint
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,17 +12,17 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val converterRepository: ConverterRepository) :ViewModel(){
+class MainViewModel @Inject constructor(private val converterRepository: ConverterRepository) :
+    ViewModel() {
 
-    val _responseState = MutableLiveData<Resource<ConversionResponse>>(null)
+    private val _responseState: MutableLiveData<Resource<ConversionResponse>> = MutableLiveData()
     val responseState: LiveData<Resource<ConversionResponse>> = _responseState
 
-
-    @SuppressLint("SuspiciousIndentation")
-    fun getValue(fromValue:String, fromType:String, toType:String){
+    fun getValue(fromValue: String, fromType: String, toType: String, isConnected: Boolean) {
         viewModelScope.launch {
-           val response = converterRepository.getConvertedValue(fromValue, fromType, toType)
-                _responseState.postValue(response)
+            val response =
+                converterRepository.getConvertedValue(fromValue, fromType, toType, isConnected)
+            _responseState.postValue(response)
         }
     }
 

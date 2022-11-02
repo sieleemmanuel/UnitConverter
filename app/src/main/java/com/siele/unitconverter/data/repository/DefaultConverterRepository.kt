@@ -9,26 +9,29 @@ class DefaultConverterRepository @Inject constructor(private val converterApi:Co
     ConverterRepository {
 
     override suspend fun getConvertedValue(
-        fromValue:String, fromType:String, toType:String): Resource<ConversionResponse> {
-        val response = converterApi.getValue(
-            fromValue = fromValue,
-            fromType = fromType,
-            toType = toType)
+        fromValue:String, fromType:String, toType:String, isConnected:Boolean): Resource<ConversionResponse> {
+        Resource.Loading<Any>()
+       return if (isConnected) {
+            val response = converterApi.getValue(
+                fromValue = fromValue,
+                fromType = fromType,
+                toType = toType
+            )
+             try {
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        return  Resource.Success(it)
+                    } ?: Resource.Error("Unknown error occurred", null)
+                } else {
+                    return  Resource.Error("Server error. Please try again", null)
+                }
 
-        return try {
-            if (response.isSuccessful){
-              response.body()?.let { Resource.Success(it)
-              } ?: Resource.Error("Unknown error occurred", null)
-            }else{
-                Resource.Error("Unknown error occurred", null)
+            } catch (e: Exception) {
+                Resource.Error("Failed: ${e.message}", null)
             }
-            Resource.Loading()
-
-        }catch (e:Exception){
-            Resource.Error("Server connection failed, Check your internet connection", null)
+        }else{
+            Resource.Error("No internet connection")
         }
-
-
     }
 
 }

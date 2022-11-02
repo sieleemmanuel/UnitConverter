@@ -2,9 +2,9 @@ package com.siele.unitconverter.ui.screens.convert
 
 import android.annotation.SuppressLint
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,14 +20,16 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
@@ -116,10 +118,16 @@ fun ConvertScreenContent(
             Constants.cryptoUnits
         }
     }
+    val focusManager = LocalFocusManager.current
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
+            .pointerInput(Unit) {
+                detectTapGestures {
+                    focusManager.clearFocus()
+                }
+            }
     ) {
 
         val boxWithConstraints = this
@@ -132,10 +140,41 @@ fun ConvertScreenContent(
         var showProgressBar by rememberSaveable { mutableStateOf(false) }
         var isError by rememberSaveable { mutableStateOf(false) }
         val context = LocalContext.current
-        val focusManager = LocalFocusManager.current
+
+        val focusRequester = remember { FocusRequester() }
         var isConverted by rememberSaveable { mutableStateOf(false) }
         val coroutineScope = rememberCoroutineScope()
-        if (boxWithConstraints.maxWidth<600.dp) {
+        val scrollState = rememberScrollState()
+
+        val resultValue by viewModel.responseState.observeAsState()
+        when (resultValue) {
+            is Resource.Success -> {
+                showProgressBar = false
+                resultValue?.data?.let { conversionResult ->
+                    toValue = conversionResult.resultFloat.toString()
+                    isConverted = false
+                }
+            }
+            is Resource.Error -> {
+                showProgressBar = false
+                resultValue?.message?.let { message ->
+                    Log.d("ConvertScreen", "Error: $message ")
+                    coroutineScope.launch {
+                        scaffoldState.snackbarHostState.showSnackbar(
+                            message = message
+                        )
+                    }
+                    isConverted = false
+                }
+            }
+            is Resource.Loading -> {
+                showProgressBar = true
+                isConverted = false
+            }
+            null -> Unit
+        }
+
+        if (boxWithConstraints.maxWidth < 600.dp) {
             Column(
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
@@ -224,7 +263,8 @@ fun ConvertScreenContent(
                                     start = 10.dp,
                                     end = 10.dp
                                 )
-                                .fillMaxWidth(),
+                                .fillMaxWidth()
+                                .focusRequester(focusRequester = focusRequester),
                             shape = RoundedCornerShape(10.dp),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Number,
@@ -239,7 +279,6 @@ fun ConvertScreenContent(
                             ),
                             isError = isError
                         )
-
                         if (isError) {
                             Text(
                                 text = stringResource(R.string.empty_value_label),
@@ -385,22 +424,12 @@ fun ConvertScreenContent(
                         if (fromValue.isEmpty()) {
                             isError = true
                         } else {
-                            if (NetworkMonitor.isNetworkConnected(context = context)) {
-                                showProgressBar = true
-
-                                viewModel.getValue(
-                                    fromValue = fromValue,
-                                    fromType = selectedItemFrom,
-                                    toType = selectedItemTo
-                                )
-                                isConverted = true
-                            } else {
-                                coroutineScope.launch {
-                                    scaffoldState.snackbarHostState.showSnackbar(
-                                        message = context.getString(R.string.network_error_message)
-                                    )
-                                }
-                            }
+                            viewModel.getValue(
+                                fromValue = fromValue,
+                                fromType = selectedItemFrom,
+                                toType = selectedItemTo,
+                                isConnected = NetworkMonitor.isNetworkConnected(context = context)
+                            )
                         }
                     },
                     modifier = Modifier
@@ -417,50 +446,11 @@ fun ConvertScreenContent(
                     shape = RoundedCornerShape(10.dp)
                 )
 
-                val resultValue by viewModel.responseState.observeAsState(null)
-                if (isConverted) {
-                    when (resultValue) {
-                        is Resource.Success -> {
-                            showProgressBar = false
-                            resultValue?.data?.let { conversionResult ->
-                                toValue = conversionResult.resultFloat.toString()
-                                isConverted = false
-                            }
-                        }
-                        is Resource.Error -> {
-                            showProgressBar = false
-                            resultValue?.message?.let { message ->
-                                Log.d("ConvertScreen", "Error: $message ")
-                                Toast.makeText(
-                                    context,
-                                    "An error occurred during conversion, try again",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                isConverted = false
-                            }
-                        }
-                        is Resource.Loading -> {
-                            showProgressBar = true
-                            isConverted = false
-                        }
-                        else -> {
-                            showProgressBar = false
-                            isConverted = false
-                            Toast.makeText(
-                                context,
-                                "An error occurred during conversion, try again",
-                                Toast.LENGTH_SHORT
-                            ).show()
-
-
-                        }
-                    }
-                }
             }
-        }else{
+        } else {
             Column(
                 modifier = Modifier
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -543,7 +533,8 @@ fun ConvertScreenContent(
                                         bottom = 10.dp,
                                         start = 10.dp,
                                         end = 10.dp
-                                    ),
+                                    )
+                                    .focusRequester(focusRequester = focusRequester),
                                 shape = RoundedCornerShape(10.dp),
                                 keyboardOptions = KeyboardOptions(
                                     keyboardType = KeyboardType.Number,
@@ -703,22 +694,13 @@ fun ConvertScreenContent(
                         if (fromValue.isEmpty()) {
                             isError = true
                         } else {
-                            if (NetworkMonitor.isNetworkConnected(context = context)) {
-                                showProgressBar = true
-
-                                viewModel.getValue(
-                                    fromValue = fromValue,
-                                    fromType = selectedItemFrom,
-                                    toType = selectedItemTo
-                                )
-                                isConverted = true
-                            } else {
-                                coroutineScope.launch {
-                                    scaffoldState.snackbarHostState.showSnackbar(
-                                        message = context.getString(R.string.network_error_message)
-                                    )
-                                }
-                            }
+                            viewModel.getValue(
+                                fromValue = fromValue,
+                                fromType = selectedItemFrom,
+                                toType = selectedItemTo,
+                                isConnected = NetworkMonitor.isNetworkConnected(context = context)
+                            )
+                            isConverted = true
                         }
                     },
                     modifier = Modifier
@@ -735,37 +717,10 @@ fun ConvertScreenContent(
                     shape = RoundedCornerShape(10.dp)
                 )
 
-                val resultValue by viewModel.responseState.observeAsState(null)
-                if (isConverted) {
-                    when (resultValue) {
-                        is Resource.Success -> {
-                            showProgressBar = false
-                            resultValue?.data?.let { conversionResult ->
-                                toValue = conversionResult.resultFloat.toString()
-                                isConverted = false
-                            }
-                        }
-                        is Resource.Error -> {
-                            showProgressBar = false
-                            resultValue?.message?.let { message ->
-                                Log.d("ConvertScreen", "Error: $message ")
-                                Toast.makeText(
-                                    context,
-                                    "An error occurred during conversion, try again",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                isConverted = false
-                            }
-                        }
-                        is Resource.Loading -> {
-                            showProgressBar = true
-                            isConverted = false
-                        }
-                        else -> {}
-                    }
-                }
             }
         }
+
+
     }
 }
 
@@ -779,7 +734,8 @@ fun ConvertScreenPreview() {
     ComposerTheme {
         ConvertScreen(
             navController = rememberNavController(),
-            unitMeasure = "Currency")
+            unitMeasure = "Currency"
+        )
     }
 
 }
