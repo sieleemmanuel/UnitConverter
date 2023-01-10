@@ -16,3 +16,14 @@ data class ConversionResponse(
     @SerializedName("valid")
     val valid: Boolean
 )
+
+data class CurrencyResponse(
+    @SerializedName("old_currency")
+    val old_currency:String,
+    @SerializedName("old_amount")
+    val old_amount:Double,
+    @SerializedName("new_amount")
+    val new_amount:Double,
+    @SerializedName("new_currency")
+    val new_currency:String,
+)

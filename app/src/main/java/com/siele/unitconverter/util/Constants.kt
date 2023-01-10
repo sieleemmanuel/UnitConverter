@@ -2,7 +2,8 @@ package com.siele.unitconverter.util
 import com.siele.unitconverter.R
 import com.siele.unitconverter.data.model.UnitOfMeasure
 object Constants {
-    const val BASE_URL: String = "https://neutrinoapi.net/"
+    const val BASE_URL: String = "https://neutrinoapi.net/convert/"
+    const val CURRENCY_BASE_URL: String = "https://api.api-ninjas.com/v1/convertcurrency"
     var unitsOfMeasure = listOf(
             UnitOfMeasure(R.drawable.length,"Length"),
             UnitOfMeasure(R.drawable.volume,"Volume"),
