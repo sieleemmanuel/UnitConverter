@@ -119,6 +119,7 @@ fun ConvertScreenContent(
         }
     }
     val focusManager = LocalFocusManager.current
+    val TAG = "ConvertScreen"
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
@@ -142,38 +143,72 @@ fun ConvertScreenContent(
         val context = LocalContext.current
 
         val focusRequester = remember { FocusRequester() }
-        var isConverted by rememberSaveable { mutableStateOf(false) }
+        // var isConverted by rememberSaveable { mutableStateOf(false) }
         val coroutineScope = rememberCoroutineScope()
         val scrollState = rememberScrollState()
 
-        val resultValue by viewModel.responseState.observeAsState()
-        when (resultValue) {
+        //val resultValue by viewModel.responseState.observeAsState()
+        val convertedResult by viewModel.unitValueEvent.collectAsState(initial = null)
+        val convertedCurrencyResult by viewModel.currencyValueEvent.collectAsState(initial = null)
+
+        if (unitMeasure == context.getString(R.string.currency_label)){
+            Log.d(TAG, "ConvertScreenContent: $unitMeasure")
+            Log.d(TAG, "ConvertScreenContent: $convertedResult")
+            when (convertedCurrencyResult) {
+                is Resource.Success -> {
+                    showProgressBar = false
+                    convertedCurrencyResult?.data?.let { result ->
+                        toValue = result.new_amount.toString()
+                        //isConverted = false
+                        Log.d(TAG, "ConvertScreenContent: $result")
+                    }
+                }
+                is Resource.Error -> {
+                    showProgressBar = false
+                    convertedCurrencyResult?.message?.let { message ->
+                        Log.d("ConvertScreen", "Error: $message ")
+                        coroutineScope.launch {
+                            scaffoldState.snackbarHostState.showSnackbar(
+                                message = message
+                            )
+                        }
+                       // isConverted = false
+                    }
+                }
+                is Resource.Loading -> {
+                    showProgressBar = true
+                    // isConverted = false
+                }
+                null -> Unit
+            }
+        }else{
+        when (convertedResult) {
             is Resource.Success -> {
                 showProgressBar = false
-                resultValue?.data?.let { conversionResult ->
+                convertedResult?.data?.let { conversionResult ->
                     toValue = conversionResult.resultFloat.toString()
-                    isConverted = false
+                    // isConverted = false
                 }
             }
             is Resource.Error -> {
                 showProgressBar = false
-                resultValue?.message?.let { message ->
+                convertedResult?.message?.let { message ->
                     Log.d("ConvertScreen", "Error: $message ")
                     coroutineScope.launch {
                         scaffoldState.snackbarHostState.showSnackbar(
                             message = message
                         )
                     }
-                    isConverted = false
+                    //isConverted = false
                 }
             }
             is Resource.Loading -> {
                 showProgressBar = true
-                isConverted = false
+               // isConverted = false
             }
             null -> Unit
         }
-
+        }
         if (boxWithConstraints.maxWidth < 600.dp) {
             Column(
                 modifier = Modifier
@@ -424,12 +459,78 @@ fun ConvertScreenContent(
                         if (fromValue.isEmpty()) {
                             isError = true
                         } else {
-                            viewModel.getValue(
-                                fromValue = fromValue,
-                                fromType = selectedItemFrom,
-                                toType = selectedItemTo,
-                                isConnected = NetworkMonitor.isNetworkConnected(context = context)
-                            )
+                            if(unitMeasure == context.getString(R.string.currency_label)){
+                                viewModel.triggerCurrencyValue(
+                                    have = selectedItemFrom,
+                                    want = selectedItemTo,
+                                    amount = fromValue.toDouble())
+                            }else{
+                                viewModel.triggerUnitValue(
+                                    fromValue = fromValue,
+                                    fromType = selectedItemFrom,
+                                    toType = selectedItemTo,
+                                    isConnected = NetworkMonitor.isNetworkConnected(context = context)
+                                )
+                            }
+                        }
+                        if (unitMeasure == context.getString(R.string.currency_label)){
+                            Log.d(TAG, "ConvertScreenContent: $unitMeasure")
+                            Log.d(TAG, "ConvertScreenContent: $convertedResult")
+                            when (convertedCurrencyResult) {
+                                is Resource.Success -> {
+                                    showProgressBar = false
+                                    convertedCurrencyResult?.data?.let { result ->
+                                        toValue = result.new_amount.toString()
+                                        //isConverted = false
+                                        Log.d(TAG, "ConvertScreenContent: $result")
+                                    }
+                                }
+                                is Resource.Error -> {
+                                    showProgressBar = false
+                                    convertedCurrencyResult?.message?.let { message ->
+                                        Log.d("ConvertScreen", "Error: $message ")
+                                        coroutineScope.launch {
+                                            scaffoldState.snackbarHostState.showSnackbar(
+                                                message = message
+                                            )
+                                        }
+                                        // isConverted = false
+                                    }
+                                }
+                                is Resource.Loading -> {
+                                    showProgressBar = true
+                                    // isConverted = false
+                                }
+                                null -> Unit
+                            }
+                        }else{
+                            when (convertedResult) {
+                                is Resource.Success -> {
+                                    showProgressBar = false
+                                    convertedResult?.data?.let { conversionResult ->
+                                        toValue = conversionResult.resultFloat.toString()
+                                        // isConverted = false
+                                        Log.d(TAG, "ConvertScreenContent: ${convertedResult!!.data}")
+                                    }
+                                }
+                                is Resource.Error -> {
+                                    showProgressBar = false
+                                    convertedResult?.message?.let { message ->
+                                        Log.d("ConvertScreen", "Error: $message ")
+                                        coroutineScope.launch {
+                                            scaffoldState.snackbarHostState.showSnackbar(
+                                                message = message
+                                            )
+                                        }
+                                        //isConverted = false
+                                    }
+                                }
+                                is Resource.Loading -> {
+                                    showProgressBar = true
+                                    // isConverted = false
+                                }
+                                null -> Unit
+                            }
                         }
                     },
                     modifier = Modifier
@@ -447,7 +548,7 @@ fun ConvertScreenContent(
                 )
 
             }
-        } else {
+        } /*else {
             Column(
                 modifier = Modifier
                     .verticalScroll(scrollState)
@@ -720,7 +821,7 @@ fun ConvertScreenContent(
             }
         }
 
-
+*/
     }
 }
 
