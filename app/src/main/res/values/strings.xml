@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Unit Converter</string>
+    <string name="app_name">U&amp;C Converter</string>
     <string name="temperature_label">Temperature</string>
     <string name="length_label">Length</string>
     <string name="electricity_label">Electricity</string>

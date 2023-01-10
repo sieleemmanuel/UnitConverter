@@ -79,7 +79,6 @@ fun ContentCompose(navController: NavController,
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            Spacer(modifier = modifier.heightIn(10.dp))
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(120.dp),
                 state = listState,
