@@ -17,6 +17,12 @@ jobs:
           cache: gradle
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+
+      - name: Touch local properties
+        run: touch local.properties
+      - name:  Add api key
+        run: echo "apiKey=\"\"" >> local.properties
+
       - name: Run Test
         run: ./gradlew test
       - name: Build project
