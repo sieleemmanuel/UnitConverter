@@ -35,8 +35,6 @@ fun MainScreen(navController: NavController) {
     }
 }
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
-
 @Composable
 fun ScafoldCompose(navController: NavController) {
     Scaffold(
@@ -68,9 +66,11 @@ fun TopBarCompose() {
 }
 
 @Composable
-fun ContentCompose(navController: NavController,
-                   paddingValues: PaddingValues,
-                   modifier: Modifier = Modifier) {
+fun ContentCompose(
+    navController: NavController,
+    paddingValues: PaddingValues,
+    modifier: Modifier = Modifier) {
+
     val  listState = rememberLazyGridState()
     Box(modifier = modifier
         .padding(paddingValues)
@@ -82,11 +82,14 @@ fun ContentCompose(navController: NavController,
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(120.dp),
                 state = listState,
-                contentPadding = PaddingValues( 10.dp),
+                contentPadding = PaddingValues( 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ){
-                items(Constants.unitsOfMeasure.size) { position ->
+                items(
+                    count = Constants.unitsOfMeasure.size,
+                    key = { Constants.unitsOfMeasure[it].unit }
+                ) { position ->
                     UnitItem(unitMeasure = Constants.unitsOfMeasure[position]) { selectedUnit ->
                         navController.navigate(Screen.ConvertScreen.route + "/${selectedUnit.unit}")
                     }

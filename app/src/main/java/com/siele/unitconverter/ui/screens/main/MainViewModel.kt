@@ -47,7 +47,7 @@ class MainViewModel @Inject constructor(private val converterRepository: Convert
 
     fun triggerUnitValue(fromValue: String, fromType: String, toType: String, isConnected: Boolean) =
         viewModelScope.launch {
-            _currencyValueEventChannel.send(Resource.Loading())
+            _unitValueEventChannel.send(Resource.Loading())
             _unitValueEventChannel.send(converterRepository.getConvertedValue(fromValue, fromType, toType, isConnected))
         }
 
