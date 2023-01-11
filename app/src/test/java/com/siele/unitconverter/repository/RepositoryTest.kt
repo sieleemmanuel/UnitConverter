@@ -58,7 +58,7 @@ class RepositoryTest {
                 "KES"
             )
 
-            `when`(converterApi.getCurrencyValue("USD", "KES", 1.0))
+            `when`(converterApi.getCurrencyValue(have = "USD", want = "KES", amount= 1.0))
                 .thenReturn(Response.success(currencyResponse))
 
             val response  = defaultConverterRepository.getCurrencyValue("USD", "KES", 1.0)
