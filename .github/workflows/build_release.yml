@@ -2,7 +2,7 @@ name: Build release apk
 
 on: workflow_dispatch
 
-permission: write-all
+permissions: write-all
 
 jobs:
   build:
