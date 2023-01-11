@@ -21,7 +21,7 @@ jobs:
       - name: Touch local properties
         run: touch local.properties
       - name:  Add api key
-        run: echo "apiKey=\"\"" >> local.properties
+        run: echo "NEUTRINO_API_PROD=\"\"" >> local.properties
 
       - name: Run Test
         run: ./gradlew test
