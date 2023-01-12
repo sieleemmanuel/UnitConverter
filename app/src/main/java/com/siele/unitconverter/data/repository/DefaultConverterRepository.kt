@@ -12,26 +12,20 @@ class DefaultConverterRepository @Inject constructor(private val converterApi:Co
 
     override suspend fun getConvertedValue(
         fromValue:String, fromType:String, toType:String, isConnected:Boolean): Resource<ConversionResponse> {
-       return if (isConnected) {
+        return  try {
             val response = converterApi.getValue(
                 fromValue = fromValue,
                 fromType = fromType,
                 toType = toType)
-             try {
                 if (response.isSuccessful) {
-                    response.body()?.let {
-                        return  Resource.Success(it)
-                    } ?: Resource.Error("Unknown error occurred", null)
+                    Resource.Success(response.body())
                 } else {
-                    return  Resource.Error(response.message(), null)
+                    return  Resource.Error("Server error occurred during conversion. Try again", null)
                 }
-
             } catch (e: Exception) {
-                Resource.Error("Failed: ${e.message}", null)
+                Resource.Error("No internet connection. Please check and try again")
             }
-        }else{
-            Resource.Error("No internet connection")
-        }
+
     }
 
     override suspend fun getCurrencyValue(
@@ -41,11 +35,13 @@ class DefaultConverterRepository @Inject constructor(private val converterApi:Co
     ): Resource<CurrencyResponse> {
         return try {
             val response = converterApi.getCurrencyValue(have = have, want =  want, amount = amount)
-            Resource.Success(response.body())
+            if (response.isSuccessful) {
+                Resource.Success(response.body())
+            }else{
+                Resource.Error("Server error occurred during conversion. Try again", null)
+            }
         }catch (e:Exception){
-            Resource.Error(e.message)
-        }catch (e:HttpException){
-            Resource.Error("No internet connection")
+            Resource.Error("No internet connection. Please check and try again")
         }
     }
 

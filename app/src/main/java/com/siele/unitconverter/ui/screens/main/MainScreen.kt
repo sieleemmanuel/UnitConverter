@@ -1,6 +1,5 @@
 package com.siele.unitconverter.ui.screens.main
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,11 +11,16 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,7 +43,7 @@ fun MainScreen(navController: NavController) {
 fun ScafoldCompose(navController: NavController) {
     Scaffold(
         topBar = { TopBarCompose() },
-    ){ paddingValues ->
+    ) { paddingValues ->
         ContentCompose(navController, paddingValues)
     }
 }
@@ -49,9 +53,10 @@ fun TopBarCompose() {
     TopAppBar(
         title = {
             Text(
-                text = "Unit Converter",
-                fontSize = 18.sp,
+                text = "Unit & Currency Converter",
+                fontSize = 20.sp,
                 maxLines = 1,
+                fontWeight = FontWeight.ExtraBold,
                 overflow = TextOverflow.Ellipsis
             )
         },
@@ -69,28 +74,32 @@ fun TopBarCompose() {
 fun ContentCompose(
     navController: NavController,
     paddingValues: PaddingValues,
-    modifier: Modifier = Modifier) {
+    modifier: Modifier = Modifier
+) {
+    val listState = rememberLazyGridState()
+    val unitTypes = remember { Constants.unitsOfMeasure }
 
-    val  listState = rememberLazyGridState()
-    Box(modifier = modifier
-        .padding(paddingValues)
-        .fillMaxSize()) {
+    Box(
+        modifier = modifier
+            .padding(paddingValues)
+            .fillMaxSize()
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
             LazyVerticalGrid(
-                columns = GridCells.Adaptive(120.dp),
+                columns = GridCells.Adaptive(100.dp),
                 state = listState,
-                contentPadding = PaddingValues( 16.dp),
+                contentPadding = PaddingValues(10.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
-            ){
+            ) {
                 items(
-                    count = Constants.unitsOfMeasure.size,
-                    key = { Constants.unitsOfMeasure[it].unit }
+                    count = unitTypes.size,
+                    key = { unitTypes[it].unit }
                 ) { position ->
-                    UnitItem(unitMeasure = Constants.unitsOfMeasure[position]) { selectedUnit ->
+                    UnitItem(unitMeasure = unitTypes[position]) { selectedUnit ->
                         navController.navigate(Screen.ConvertScreen.route + "/${selectedUnit.unit}")
                     }
                 }
@@ -100,47 +109,66 @@ fun ContentCompose(
 }
 
 @Composable
-fun UnitItem(unitMeasure: UnitOfMeasure, modifier: Modifier = Modifier, selectedMeasure:(UnitOfMeasure)->Unit) {
+fun UnitItem(
+    unitMeasure: UnitOfMeasure,
+    modifier: Modifier = Modifier,
+    selectedMeasure: (UnitOfMeasure) -> Unit
+) {
+
+    val measure = remember { unitMeasure }
     Card(
-        shape = RoundedCornerShape(5.dp),
+        shape = RoundedCornerShape(16.dp),
         elevation = 10.dp,
         modifier = modifier
-            .wrapContentHeight()
             .fillMaxSize()
-            .clickable { selectedMeasure(unitMeasure) },
+            .height(120.dp)
+            .shadow(elevation = 5.dp, shape = RoundedCornerShape(16.dp)),
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { selectedMeasure(measure) },
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
+
             Image(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(110.dp)
-                    .padding(15.dp),
-                painter = painterResource(unitMeasure.symbol),
+                    .width(70.dp)
+                    .height(70.dp)
+                    .padding(top = 16.dp),
+                painter = painterResource(measure.symbol),
                 contentDescription = "Profile Picture",
-                contentScale = ContentScale.Fit
+                contentScale = ContentScale.Fit,
+                colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
             )
-
             Text(
                 modifier = Modifier
-                    .padding(vertical = 10.dp),
-                fontWeight = FontWeight.Bold,
-                text = unitMeasure.unit,
+                    .padding(top = 16.dp),
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 17.sp,
+                text = measure.unit,
                 color = MaterialTheme.colors.primary,
                 style = MaterialTheme.typography.body2,
             )
+
         }
     }
 }
+/*
 
 @Preview(showSystemUi = true)
 @Composable
 fun MainScreenPreview() {
     ComposerTheme {
-        MainScreen(navController = rememberNavController())
+         MainScreen(navController = rememberNavController())
+        */
+/*UnitItem(unitMeasure = Constants.unitsOfMeasure.last())
+        {
+
+        }*//*
+
     }
-}
+}*/
 
 
