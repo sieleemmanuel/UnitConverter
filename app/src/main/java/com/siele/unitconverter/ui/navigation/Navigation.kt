@@ -2,6 +2,8 @@ package com.siele.unitconverter.ui.navigation
 
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,8 +15,7 @@ import com.siele.unitconverter.util.Screen
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun Navigation() {
-    val navController = rememberNavController()
+fun Navigation(navController: NavHostController) {
     NavHost(navController = navController, startDestination = Screen.MainScreen.route){
 
         composable(route = Screen.MainScreen.route){

@@ -54,7 +54,7 @@ fun TopBarCompose() {
         title = {
             Text(
                 text = "Unit & Currency Converter",
-                fontSize = 20.sp,
+                fontSize = 25.sp,
                 maxLines = 1,
                 fontWeight = FontWeight.ExtraBold,
                 overflow = TextOverflow.Ellipsis
@@ -100,7 +100,7 @@ fun ContentCompose(
                     key = { unitTypes[it].unit }
                 ) { position ->
                     UnitItem(unitMeasure = unitTypes[position]) { selectedUnit ->
-                        navController.navigate(Screen.ConvertScreen.route + "/${selectedUnit.unit}")
+                         navController.navigate(Screen.ConvertScreen.route + "/${selectedUnit.unit}")
                     }
                 }
             }
