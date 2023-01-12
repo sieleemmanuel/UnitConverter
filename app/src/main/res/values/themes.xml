@@ -4,4 +4,9 @@
     <style name="Theme.Composer" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">@color/indigo900</item>
     </style>
+
+    <style name="Theme.SplashScreen" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/bg_splash_screen</item>
+        <item name="android:statusBarColor">@color/indigo900</item>
+    </style>
 </resources>
