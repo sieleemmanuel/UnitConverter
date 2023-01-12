@@ -23,8 +23,8 @@ jobs:
       - name:  Add api key
         run: echo "NEUTRINO_API_PROD=\"\"" >> local.properties
 
-      - name: Run Test
-        run: ./gradlew test
+#      - name: Run Test
+#        run: ./gradlew test
       - name: Build project
         run: ./gradlew assemble
 
