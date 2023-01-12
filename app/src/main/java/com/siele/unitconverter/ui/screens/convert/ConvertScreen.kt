@@ -2,20 +2,17 @@ package com.siele.unitconverter.ui.screens.convert
 
 import android.annotation.SuppressLint
 import android.util.Log
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,15 +30,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.siele.unitconverter.R
 import com.siele.unitconverter.ui.screens.main.MainViewModel
-import com.siele.unitconverter.ui.theme.ComposerTheme
 import com.siele.unitconverter.util.Constants
 import com.siele.unitconverter.util.NetworkMonitor
 import com.siele.unitconverter.util.Resource
@@ -76,8 +70,9 @@ fun ConvertTopBar(title: String, navController: NavController) {
     TopAppBar(
         title = {
             Text(
-                text = "$title Conversion",
-                fontSize = 18.sp,
+                text = title,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.ExtraBold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -103,19 +98,19 @@ fun ConvertScreenContent(
     scaffoldState: ScaffoldState
 ) {
     val options = when (unitMeasure) {
-        stringResource(R.string.temperature_label) -> Constants.temperatureUnits
-        stringResource(R.string.length_label) -> Constants.lengthUnits
-        stringResource(R.string.electricity_label) -> Constants.electricCurrentUnits
-        stringResource(R.string.volume_label) -> Constants.volumeUnits
-        stringResource(R.string.weight_label) -> Constants.weightUnits
-        stringResource(R.string.angle_label) -> Constants.angleUnits
-        stringResource(R.string.time_label) -> Constants.timeUnits
-        stringResource(R.string.energy_label) -> Constants.energyUnits
-        stringResource(R.string.force_label) -> Constants.forceUnits
-        stringResource(R.string.storage_label) -> Constants.storageUnits
-        stringResource(R.string.currency_label) -> Constants.currencyUnits
+        stringResource(R.string.temperature_label) -> rememberSaveable { Constants.temperatureUnits }
+        stringResource(R.string.length_label) -> rememberSaveable { Constants.lengthUnits }
+        stringResource(R.string.electricity_label) -> rememberSaveable { Constants.electricCurrentUnits }
+        stringResource(R.string.volume_label) -> rememberSaveable { Constants.volumeUnits }
+        stringResource(R.string.weight_label) -> rememberSaveable { Constants.weightUnits }
+        stringResource(R.string.angle_label) -> rememberSaveable { Constants.angleUnits }
+        stringResource(R.string.time_label) -> rememberSaveable { Constants.timeUnits }
+        stringResource(R.string.energy_label) -> rememberSaveable { Constants.energyUnits }
+        stringResource(R.string.force_label) -> rememberSaveable { Constants.forceUnits }
+        stringResource(R.string.storage_label) -> rememberSaveable { Constants.storageUnits }
+        stringResource(R.string.currency_label) -> rememberSaveable { Constants.currencyUnits }
         else -> {
-            Constants.cryptoUnits
+            rememberSaveable { Constants.cryptoUnits }
         }
     }
     val focusManager = LocalFocusManager.current
@@ -141,80 +136,65 @@ fun ConvertScreenContent(
         var showProgressBar by rememberSaveable { mutableStateOf(false) }
         var isError by rememberSaveable { mutableStateOf(false) }
         val context = LocalContext.current
-
-        val focusRequester = remember { FocusRequester() }
-        // var isConverted by rememberSaveable { mutableStateOf(false) }
-        val coroutineScope = rememberCoroutineScope()
         val scrollState = rememberScrollState()
 
-        //val resultValue by viewModel.responseState.observeAsState()
+        val focusRequester = remember { FocusRequester() }
+        val coroutineScope = rememberCoroutineScope()
         val convertedResult by viewModel.unitValueEvent.collectAsState(initial = null)
         val convertedCurrencyResult by viewModel.currencyValueEvent.collectAsState(initial = null)
 
-        if (unitMeasure == context.getString(R.string.currency_label)){
-            Log.d(TAG, "ConvertScreenContent: $unitMeasure")
-            Log.d(TAG, "ConvertScreenContent: $convertedResult")
-            when (convertedCurrencyResult) {
+        if (unitMeasure == context.getString(R.string.currency_label)) {
+          when (convertedCurrencyResult) {
                 is Resource.Success -> {
                     showProgressBar = false
                     convertedCurrencyResult?.data?.let { result ->
                         toValue = result.new_amount.toString()
-                        //isConverted = false
-                        Log.d(TAG, "ConvertScreenContent: $result")
                     }
                 }
                 is Resource.Error -> {
                     showProgressBar = false
-                    convertedCurrencyResult?.message?.let { message ->
-                        Log.d("ConvertScreen", "Error: $message ")
-                        coroutineScope.launch {
-                            scaffoldState.snackbarHostState.showSnackbar(
-                                message = message
-                            )
+                    LaunchedEffect(key1 = true){
+                        convertedCurrencyResult?.message?.let { message ->
+                                scaffoldState.snackbarHostState.showSnackbar(
+                                    message = message
+                                )
                         }
-                       // isConverted = false
                     }
                 }
                 is Resource.Loading -> {
                     showProgressBar = true
-                    // isConverted = false
                 }
                 null -> Unit
             }
-        }else{
-        when (convertedResult) {
-            is Resource.Success -> {
-                showProgressBar = false
-                convertedResult?.data?.let { conversionResult ->
-                    toValue = conversionResult.resultFloat.toString()
-                    // isConverted = false
-                }
-            }
-            is Resource.Error -> {
-                showProgressBar = false
-                convertedResult?.message?.let { message ->
-                    Log.d("ConvertScreen", "Error: $message ")
-                    coroutineScope.launch {
-                        scaffoldState.snackbarHostState.showSnackbar(
-                            message = message
-                        )
+        } else {
+            when (convertedResult) {
+                is Resource.Success -> {
+                    showProgressBar = false
+                    convertedResult?.data?.let { conversionResult ->
+                        toValue = conversionResult.resultFloat.toString()
                     }
-                    //isConverted = false
                 }
+                is Resource.Error -> {
+                    showProgressBar = false
+                    LaunchedEffect(key1 = true ) {
+                    convertedResult?.message?.let { message ->
+                            scaffoldState.snackbarHostState.showSnackbar(
+                                message = message
+                            )
+                        }
+                    }
+                }
+                is Resource.Loading -> {
+                    showProgressBar = true
+                }
+                null -> Unit
             }
-            is Resource.Loading -> {
-                showProgressBar = true
-               // isConverted = false
-            }
-            null -> Unit
-        }
         }
         if (boxWithConstraints.maxWidth < 600.dp) {
             Column(
                 modifier = Modifier
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
             ) {
-
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -268,6 +248,11 @@ fun ConvertScreenContent(
                                         onClick = {
                                             selectedItemFrom = selectedTypeFrom
                                             expandedItemFrom = false
+                                            toValue = if (selectedItemFrom == selectedItemTo) {
+                                                "1.0"
+                                            } else {
+                                                ""
+                                            }
                                         }
                                     ) {
                                         Text(text = selectedTypeFrom)
@@ -330,6 +315,7 @@ fun ConvertScreenContent(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .height(IntrinsicSize.Max)
                         .padding(horizontal = 15.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -342,7 +328,7 @@ fun ConvertScreenContent(
                     )
                     if (showProgressBar) {
                         CircularProgressIndicator(
-                            modifier = Modifier.size(50.dp)
+                            modifier = Modifier.size(30.dp)
                         )
                     }
 
@@ -416,6 +402,11 @@ fun ConvertScreenContent(
                                         onClick = {
                                             selectedItemTo = selectedText
                                             expandedItemTo = false
+                                            toValue = if (selectedItemFrom == selectedItemTo) {
+                                                "1.0"
+                                            } else {
+                                                ""
+                                            }
                                         }) {
                                         Text(text = selectedText)
                                     }
@@ -432,9 +423,7 @@ fun ConvertScreenContent(
 
                         OutlinedTextField(
                             value = toValue,
-                            onValueChange = {
-                                toValue = it
-                            },
+                            onValueChange = { toValue = it },
                             singleLine = true,
                             modifier = Modifier
                                 .padding(
@@ -459,77 +448,19 @@ fun ConvertScreenContent(
                         if (fromValue.isEmpty()) {
                             isError = true
                         } else {
-                            if(unitMeasure == context.getString(R.string.currency_label)){
+                            if (unitMeasure == context.getString(R.string.currency_label)) {
                                 viewModel.triggerCurrencyValue(
                                     have = selectedItemFrom,
                                     want = selectedItemTo,
-                                    amount = fromValue.toDouble())
-                            }else{
+                                    amount = fromValue.toDouble()
+                                )
+                            } else {
                                 viewModel.triggerUnitValue(
                                     fromValue = fromValue,
                                     fromType = selectedItemFrom,
                                     toType = selectedItemTo,
                                     isConnected = NetworkMonitor.isNetworkConnected(context = context)
                                 )
-                            }
-                        }
-                        if (unitMeasure == context.getString(R.string.currency_label)){
-                            Log.d(TAG, "ConvertScreenContent: $unitMeasure")
-                            Log.d(TAG, "ConvertScreenContent: $convertedResult")
-                            when (convertedCurrencyResult) {
-                                is Resource.Success -> {
-                                    showProgressBar = false
-                                    convertedCurrencyResult?.data?.let { result ->
-                                        toValue = result.new_amount.toString()
-                                        //isConverted = false
-                                        Log.d(TAG, "ConvertScreenContent: $result")
-                                    }
-                                }
-                                is Resource.Error -> {
-                                    showProgressBar = false
-                                    convertedCurrencyResult?.message?.let { message ->
-                                        Log.d("ConvertScreen", "Error: $message ")
-                                        coroutineScope.launch {
-                                            scaffoldState.snackbarHostState.showSnackbar(
-                                                message = message
-                                            )
-                                        }
-                                        // isConverted = false
-                                    }
-                                }
-                                is Resource.Loading -> {
-                                    showProgressBar = true
-                                    // isConverted = false
-                                }
-                                null -> Unit
-                            }
-                        }else{
-                            when (convertedResult) {
-                                is Resource.Success -> {
-                                    showProgressBar = false
-                                    convertedResult?.data?.let { conversionResult ->
-                                        toValue = conversionResult.resultFloat.toString()
-                                        // isConverted = false
-                                        Log.d(TAG, "ConvertScreenContent: ${convertedResult!!.data}")
-                                    }
-                                }
-                                is Resource.Error -> {
-                                    showProgressBar = false
-                                    convertedResult?.message?.let { message ->
-                                        Log.d("ConvertScreen", "Error: $message ")
-                                        coroutineScope.launch {
-                                            scaffoldState.snackbarHostState.showSnackbar(
-                                                message = message
-                                            )
-                                        }
-                                        //isConverted = false
-                                    }
-                                }
-                                is Resource.Loading -> {
-                                    showProgressBar = true
-                                    // isConverted = false
-                                }
-                                null -> Unit
                             }
                         }
                     },
@@ -548,10 +479,9 @@ fun ConvertScreenContent(
                 )
 
             }
-        } /*else {
+        } else {
             Column(
-                modifier = Modifier
-                    .verticalScroll(scrollState)
+                modifier = Modifier.verticalScroll(scrollState)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -559,27 +489,22 @@ fun ConvertScreenContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Card(
-                        modifier = Modifier
-                            .padding(8.dp),
+                        modifier = Modifier.padding(8.dp),
                         elevation = 5.dp,
                         shape = RoundedCornerShape(15.dp)
                     ) {
                         Column(
-                            modifier = Modifier
-                                .padding(8.dp)
+                            modifier = Modifier.padding(8.dp)
                         ) {
-
                             Text(
                                 text = "Select $unitMeasure type",
                                 modifier = Modifier
                                     .padding(10.dp)
                             )
-
                             ExposedDropdownMenuBox(
                                 expanded = expandedItemFrom,
                                 onExpandedChange = { expandedItemFrom = !expandedItemFrom },
-                                modifier = Modifier
-                                    .padding(10.dp)
+                                modifier = Modifier.padding(10.dp)
                             ) {
                                 TextField(
                                     value = selectedItemFrom,
@@ -607,10 +532,9 @@ fun ConvertScreenContent(
                                                 selectedItemFrom = selectedTypeFrom
                                                 expandedItemFrom = false
                                             }
-                                        ) {
-                                            Text(text = selectedTypeFrom)
-                                        }
+                                        ) { Text(text = selectedTypeFrom) }
                                     }
+
                                 }
                             }
 
@@ -655,13 +579,10 @@ fun ConvertScreenContent(
                                 Text(
                                     text = stringResource(R.string.empty_value_label),
                                     color = MaterialTheme.colors.error,
-                                    modifier = Modifier
-                                        .padding(start = 16.dp)
-
+                                    modifier = Modifier.padding(start = 16.dp)
                                 )
                             }
                         }
-
                     }
 
                     Column(
@@ -676,7 +597,6 @@ fun ConvertScreenContent(
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp
                         )
-
                         Image(
                             modifier = Modifier
                                 .size(40.dp)
@@ -746,13 +666,24 @@ fun ConvertScreenContent(
                                     },
                                     modifier = Modifier.verticalScroll(rememberScrollState())
                                 ) {
-                                    options.forEach { selectedText ->
+                                    /*options.forEach { selectedText ->
                                         DropdownMenuItem(
                                             onClick = {
-                                                selectedItemTo = selectedText
+                                               selectedItemTo = selectedText
                                                 expandedItemTo = false
                                             }) {
                                             Text(text = selectedText)
+                                        }
+                                    }*/
+                                    LazyColumn {
+                                        items(options.size) { pos ->
+                                            Box(modifier = Modifier.clickable {
+                                                selectedItemTo = options[pos]
+                                                expandedItemTo = false
+                                            }) {
+                                                Text(options[pos])
+                                            }
+
                                         }
                                     }
                                 }
@@ -795,13 +726,20 @@ fun ConvertScreenContent(
                         if (fromValue.isEmpty()) {
                             isError = true
                         } else {
-                            viewModel.getValue(
-                                fromValue = fromValue,
-                                fromType = selectedItemFrom,
-                                toType = selectedItemTo,
-                                isConnected = NetworkMonitor.isNetworkConnected(context = context)
-                            )
-                            isConverted = true
+                            if (unitMeasure == context.getString(R.string.currency_label)) {
+                                viewModel.triggerCurrencyValue(
+                                    have = selectedItemFrom,
+                                    want = selectedItemTo,
+                                    amount = fromValue.toDouble()
+                                )
+                            } else {
+                                viewModel.triggerUnitValue(
+                                    fromValue = fromValue,
+                                    fromType = selectedItemFrom,
+                                    toType = selectedItemTo,
+                                    isConnected = NetworkMonitor.isNetworkConnected(context = context)
+                                )
+                            }
                         }
                     },
                     modifier = Modifier
@@ -821,11 +759,10 @@ fun ConvertScreenContent(
             }
         }
 
-*/
     }
 }
 
-
+/*
 @OptIn(ExperimentalMaterialApi::class)
 @Preview(
     showSystemUi = true,
@@ -840,3 +777,4 @@ fun ConvertScreenPreview() {
     }
 
 }
+*/
