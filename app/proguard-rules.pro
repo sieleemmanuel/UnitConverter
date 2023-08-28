@@ -19,3 +19,18 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keepattributes Signatures
+-keep class com.siele.unitconverter.data.model.** { *; }
+
+# retrofit
+#-dontwarn retrofit.**
+#-keep class retrofit2.** { *; }
+#-keepattributes Exceptions
+
+# okioHttp3
+-keepattributes *Annotation*
+-keep class okhttp3.** { *; }
+-keep interface okhttp3.** { *; }
+-dontwarn okhttp3.**
+-dontnote okhttp3.**
